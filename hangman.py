@@ -15,7 +15,10 @@ def is_word_guessed(secret_word, letters_guessed):
       return True (if user guess the world correctly )
       return False (wrong selection)
     '''
-    return False
+    for i in range(len(secret_word)):
+        if secret_word[i] not in letters_guessed:
+            return False
+    return True
 
 # if you want to test this function please call function -> get_guessed_word("kindness", [k, n, d])
 
@@ -41,6 +44,23 @@ def get_guessed_word(secret_word, letters_guessed):
     return guessed_word
 
 
+
+def isValid(ip_character):
+    if ip_character == "hint":
+        return False
+
+    alphabets = "abcdefghijklmnopqrstuvwxyz"
+    if len(ip_character) != 1:
+        print("You can enter only one letter at a time!")
+        return False
+    elif ip_character not in alphabets:
+        print("Please Enter valid character")
+        return False
+    else:
+        return True
+
+
+
 def get_available_letters(letters_guessed):
     '''
     letters_guessed: list contains all guessed characters
@@ -50,8 +70,12 @@ def get_available_letters(letters_guessed):
       letters_guessed = ['e', 'a'] then    
       return sting is -> `bcdfghijklmnopqrstuvwxyz`
     '''
+    available_letters = ""
     letters_left = string.ascii_lowercase
-    return letters_left
+    for i in range(len(letters_left)):
+        if letters_left[i] not in letters_guessed:
+            available_letters += letters_left[i]
+    return available_letters
 
 
 def hangman(secret_word):
@@ -74,26 +98,52 @@ def hangman(secret_word):
         str(len(secret_word))), end='\n\n')
 
     letters_guessed = []
+    remaining_lives = 8
+    hintTaken = 0
 
-    available_letters = get_available_letters(letters_guessed)
-    print("Available letters: {} ".format(available_letters))
+    while (True):
 
-    guess = input("Please guess a letter: ")
-    letter = guess.lower()
+        while (True):
+            available_letters = get_available_letters(letters_guessed)
+            print("Available letters: {} ".format(available_letters))
 
-    if letter in secret_word:
-        letters_guessed.append(letter)
-        print("Good guess: {} ".format(
-            get_guessed_word(secret_word, letters_guessed)))
-        if is_word_guessed(secret_word, letters_guessed) == True:
-            print(" * * Congratulations, you won! * * ", end='\n\n')
-    else:
-        print("Oops! That letter is not in my word: {} ".format(
-            get_guessed_word(secret_word, letters_guessed)))
-        letters_guessed.append(letter)
-        print("")
+            guess = input("Please guess a letter: ")
+            letter = guess.lower()
+            if letter not in get_available_letters(letters_guessed):
+                print("You have entered this letter previously!")
+                continue
+            if (isValid(letter)):
+                break
+            if(letter=="hint") & (hintTaken==0):
+                for let in secret_word:
+                    if let not in letters_guessed:
+                        print("Hint : {}".format(let))
+                        hintTaken = 1
+                        break
+            elif(letter=="hint") & (hintTaken==1):
+                print("Oops:( You have already taken hint!")
+            
 
+        if letter in secret_word:
+            letters_guessed.append(letter)
+            print("Good guess: {} ".format(
+                get_guessed_word(secret_word, letters_guessed)))
+            if is_word_guessed(secret_word, letters_guessed) == True:
+                print(" * * Congratulations, you won! * * ", end='\n\n')
+                break
+        else:
+            print("Oops! That letter is not in my word: {} ".format(
+                get_guessed_word(secret_word, letters_guessed)))
+            letters_guessed.append(letter)
+            print(IMAGES[8-remaining_lives])
+            remaining_lives -= 1
+            print("You have {} live left!".format(remaining_lives))
+        if(remaining_lives==0):
+            print("You are out of your lives!")
+            print("The correct word is {}".format(secret_word))
+            break
 
+    print("---------------------------------------------------")
 # Load the list of words into the variable wordlist
 # So that it can be accessed from anywhere in the program
 secret_word = choose_word()

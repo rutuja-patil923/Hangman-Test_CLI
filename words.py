@@ -12,11 +12,12 @@ def load_words():
 
     # uncomment the below for testing
     
-    # WORDLIST_FILENAME = "words.txt"
-    # inFile = open(WORDLIST_FILENAME, 'r', 0)
-    # line = inFile.readline()
-    # word_list = string.split(line)
-
+    WORDLIST_FILENAME = "words.txt"
+    inFile = open(WORDLIST_FILENAME, "r")
+    line = inFile.readline()
+    # print(line)
+    word_list = line.split(" ")
+    # print(word_list)
     return word_list
 
 
